@@ -1,0 +1,1956 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SHADAN ASAD — Fullstack AI Developer</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@600;700;800&display=swap"
+    rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Syne', 'Inter', 'sans-serif'],
+            serif: ['Instrument Serif', 'Georgia', 'serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root {
+      --bg: #09090b;
+      --bg-elevated: #111114;
+      --bg-glass: rgba(17, 17, 20, 0.86);
+      --fg: #fafafa;
+      --fg-muted: #a1a1aa;
+      --fg-subtle: #52525b;
+      --border: rgba(255, 255, 255, 0.09);
+      --border-strong: rgba(255, 255, 255, 0.22);
+      --signal: #ff3b1d;
+      --led: #10b981;
+    }
+
+    html[data-paper="true"] {
+      --bg: #f4f1ea;
+      --bg-elevated: #ebe6dc;
+      --bg-glass: rgba(244, 241, 234, 0.88);
+      --fg: #111113;
+      --fg-muted: #52525b;
+      --fg-subtle: #71717a;
+      --border: rgba(17, 17, 19, 0.12);
+      --border-strong: rgba(17, 17, 19, 0.32);
+      --signal: #e12d13;
+      --led: #059669;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--fg);
+      transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-x: hidden;
+    }
+
+    .hairline-t {
+      border-top: 1px solid var(--border);
+    }
+
+    .hairline-b {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hairline-l {
+      border-left: 1px solid var(--border);
+    }
+
+    .hairline-r {
+      border-right: 1px solid var(--border);
+    }
+
+    .hairline-box {
+      border: 1px solid var(--border);
+      background-color: var(--bg-elevated);
+      transition: border-color 0.18s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .hairline-box:hover {
+      border-color: var(--border-strong);
+    }
+
+    .dock-pill {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-strong);
+      box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.65);
+    }
+
+    .kbd-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      color: var(--fg-muted);
+    }
+
+    .signal-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 9999px;
+      background-color: var(--signal);
+      display: inline-block;
+    }
+
+    .led-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 9999px;
+      background-color: var(--led);
+      display: inline-block;
+      box-shadow: 0 0 10px var(--led);
+    }
+
+    .muted-text {
+      color: var(--fg-muted);
+    }
+
+    .subtle-text {
+      color: var(--fg-subtle);
+    }
+
+    input[type="range"] {
+      accent-color: var(--signal);
+    }
+
+    .showcase-stage {
+      perspective: 1400px;
+    }
+
+    @keyframes showcaseEnterNext {
+      0% {
+        opacity: 0;
+        transform: translate3d(72px, 6px, 0) scale(0.93) rotateY(-4deg);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1) rotateY(0deg);
+      }
+    }
+
+    @keyframes showcaseEnterPrev {
+      0% {
+        opacity: 0;
+        transform: translate3d(-72px, 6px, 0) scale(0.93) rotateY(4deg);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1) rotateY(0deg);
+      }
+    }
+
+    @keyframes showcaseExitNext {
+      0% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1) rotateY(0deg);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate3d(-64px, 4px, 0) scale(0.94) rotateY(3.5deg);
+      }
+    }
+
+    @keyframes showcaseExitPrev {
+      0% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1) rotateY(0deg);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate3d(64px, 4px, 0) scale(0.94) rotateY(-3.5deg);
+      }
+    }
+
+    @keyframes showcasePeekIn {
+      0% {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.92);
+      }
+
+      100% {
+        opacity: 0.65;
+        transform: translateY(-50%) scale(1);
+      }
+    }
+
+    @keyframes showcaseBarSlide {
+      0% {
+        transform: translateX(-100%);
+      }
+
+      100% {
+        transform: translateX(250%);
+      }
+    }
+
+    .showcase-enter-next {
+      animation: showcaseEnterNext 460ms cubic-bezier(0.22, 1.24, 0.36, 1) both;
+    }
+
+    .showcase-enter-prev {
+      animation: showcaseEnterPrev 460ms cubic-bezier(0.22, 1.24, 0.36, 1) both;
+    }
+
+    .showcase-exit-next {
+      animation: showcaseExitNext 190ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .showcase-exit-prev {
+      animation: showcaseExitPrev 190ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .showcase-peek-card {
+      animation: showcasePeekIn 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      transition: opacity 260ms ease, transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 200ms ease;
+    }
+
+    .showcase-peek-left:hover {
+      opacity: 0.85;
+      transform: translateY(-50%) translateX(-6px) scale(1.02);
+    }
+
+    .showcase-peek-right:hover {
+      opacity: 0.85;
+      transform: translateY(-50%) translateX(6px) scale(1.02);
+    }
+
+    .showcase-loader-bar {
+      animation: showcaseBarSlide 1.15s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    @keyframes clientPanelIn {
+      0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.99);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .client-panel-in {
+      animation: clientPanelIn 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+  </style>
+</head>
+
+<body class="font-sans antialiased min-h-screen flex flex-col pb-24 selection:bg-[#ff3b1d] selection:text-white">
+
+  <!-- TOP ARCHITECTURAL TELEMETRY BAR (Swiss Hardware Header) -->
+  <header class="sticky top-0 z-40 hairline-b backdrop-blur-md" style="background: var(--bg-glass);">
+    <div class="max-w-[1400px] mx-auto px-4 sm:px-8 h-12 flex items-center justify-between text-xs font-mono">
+      <!-- Left: Identity & Coordinates -->
+      <div class="flex items-center gap-4">
+        <button type="button" onclick="scrollToSection('top')"
+          class="flex items-center gap-2 font-semibold tracking-tight hover:opacity-80 transition">
+          <span class="signal-dot"></span>
+          <span>SHADAN.ASAD</span>
+          <span class="subtle-text hidden sm:inline">// SYS.026</span>
+        </button>
+        <span class="hidden md:inline-block subtle-text">|</span>
+        <span class="hidden md:inline-flex items-center gap-1.5 muted-text">
+          <span class="led-dot"></span>
+          <span>FULLSTACK AI DEVELOPER • AVAILABLE NOW</span>
+        </span>
+      </div>
+
+      <!-- Center: Live IST Telemetry Clock -->
+      <div class="hidden lg:flex items-center gap-3 muted-text">
+        <span>HYDERABAD / IN</span>
+        <span>•</span>
+        <span id="liveClockDisplay">IST 11:31:00</span>
+        <span>•</span>
+        <span id="activeKeyHint" class="px-2 py-0.5 rounded hairline-box text-[10px]">PRESS [⌘K] INDEX • [T] THEME • [S]
+          SFX</span>
+      </div>
+
+      <!-- Right: Hardware Switches (Sound, Paper/Carbon Theme, Search, GitHub) -->
+      <div class="flex items-center gap-2">
+        <button type="button" onclick="toggleSound()" id="soundToggleBtn"
+          class="px-2.5 py-1 rounded hairline-box text-[11px] flex items-center gap-1.5"
+          title="Toggle Tactile UI Audio [S]">
+          <span id="soundLed" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span id="soundLabel">SFX: ON</span>
+        </button>
+
+        <button type="button" onclick="togglePaperMode()" id="themeToggleBtn"
+          class="px-2.5 py-1 rounded hairline-box text-[11px] flex items-center gap-1.5"
+          title="Invert Carbon / Archival Paper Mode [T]">
+          <span id="themeModeLabel">CARBON</span>
+          <span class="kbd-tag">T</span>
+        </button>
+
+        <button type="button" onclick="openQuickSearch()"
+          class="px-2.5 py-1 rounded hairline-box text-[11px] flex items-center gap-1.5" title="Command Palette [⌘K]">
+          <span>INDEX</span>
+          <span class="kbd-tag">⌘K</span>
+        </button>
+
+        <a href="https://github.com/shadan-asad" target="_blank" rel="noopener noreferrer"
+          class="px-2.5 py-1 rounded bg-[#ff3b1d] text-white font-semibold text-[11px] hover:opacity-90 transition">
+          GH ↗
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE CONTAINER -->
+  <main id="top" class="max-w-[1400px] w-full mx-auto px-4 sm:px-8 flex-1">
+
+    <!-- EDITORIAL SWISS HERO STRIP -->
+    <section class="py-10 sm:py-14 hairline-b">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
+        <div class="lg:col-span-8 space-y-3">
+          <div class="flex flex-wrap items-center gap-2 text-[11px] font-mono muted-text uppercase tracking-widest">
+            <span class="text-[#ff3b1d] font-semibold">FULLSTACK AI DEVELOPER</span>
+            <span>•</span>
+            <span>FRONTEND + BACKEND + AI AGENTS</span>
+            <span>•</span>
+            <span>3+ YEARS EXPERIENCE</span>
+          </div>
+          <h1 class="font-display font-extrabold text-3xl sm:text-5xl lg:text-[54px] tracking-tight leading-[1.03]">
+            Fullstack AI Developer building <span class="font-serif italic font-normal text-[#ff3b1d]">complete web
+              apps</span>, AI tools &amp; interactive 3D sites.
+          </h1>
+        </div>
+
+        <div class="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col justify-between items-start lg:items-end gap-4">
+          <p class="text-xs sm:text-sm muted-text max-w-sm lg:text-right leading-relaxed">
+            I build end-to-end products from <strong style="color:var(--fg)">React, Next.js &amp; 3D WebGL
+              frontends</strong> to <strong style="color:var(--fg)">Python, Node.js, Java &amp; AWS backends</strong>.
+            Shipped 5 live client web apps, <strong style="color:var(--fg)">ClaimPilot AI</strong>, and production
+            systems at <strong style="color:var(--fg)">Trianz</strong> &amp; <strong style="color:var(--fg)">Bex Card
+              UK</strong>.
+          </p>
+          <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
+            <a href="https://github.com/shadan-asad" target="_blank" rel="noopener noreferrer"
+              class="px-3 py-1.5 rounded hairline-box hover:border-[#ff3b1d] transition">github.com/shadan-asad ↗</a>
+            <a href="https://portfolio-projects-gules.vercel.app/" target="_blank" rel="noopener noreferrer"
+              class="px-3 py-1.5 rounded hairline-box hover:border-[#ff3b1d] transition">3D Landing Vault ↗</a>
+            <a href="https://linkedin.com/in/shadan-asad" target="_blank" rel="noopener noreferrer"
+              class="px-3 py-1.5 rounded hairline-box hover:border-[#ff3b1d] transition">LinkedIn ↗</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 01: PRODUCTION DEPLOYED APPLICATIONS FOR CLIENTS -->
+    <section id="client-apps" class="py-12 hairline-b space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-mono text-emerald-400 uppercase tracking-wider">
+            <span class="led-dot"></span>
+            <span>01 // PRODUCTION CLIENT WEB APPLICATIONS (05 LIVE)</span>
+          </div>
+          <h2 class="font-display font-bold text-2xl sm:text-4xl mt-1">
+            Deployed Fullstack Apps <span class="font-serif italic font-normal text-[#ff3b1d]">Built for Clients</span>
+          </h2>
+          <p class="text-xs sm:text-sm muted-text mt-1 max-w-2xl">
+            Live production web applications built and deployed for clients across healthcare, UK fintech, travel,
+            on-demand services, and national competitions.
+          </p>
+        </div>
+      </div>
+
+      <!-- Interactive Tabbed Client Apps Showcase -->
+      <div id="clientCardsGrid" class="space-y-4"></div>
+    </section>
+
+    <!-- SECTION 02: THE 7 ACTUAL DEPLOYED LANDING PAGES (Single Centered 80% Embed + Blurred Prev/Next Navigation) -->
+    <section id="landing-hub" class="py-12 hairline-b space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-mono text-[#ff3b1d] uppercase tracking-wider">
+            <span class="signal-dot"></span>
+            <span>02 // LIVE 3D &amp; AI LANDING PAGES (07)</span>
+          </div>
+          <h2 class="font-display font-bold text-2xl sm:text-4xl mt-1">
+            7 Live <span class="font-serif italic font-normal text-[#ff3b1d]">Interactive Landing Pages</span>
+          </h2>
+          <p class="text-xs sm:text-sm muted-text mt-1 max-w-2xl">
+            Loaded one at a time for smooth WebGL performance. Use the arrows to switch projects, open <strong
+              style="color:var(--fg)">Full Screen</strong>, or visit its direct URL.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <button type="button" onclick="openLandingFullscreen(activeLandingIdx)"
+            class="px-4 py-2.5 rounded-xl bg-[#ff3b1d] text-white font-mono text-xs font-semibold hover:opacity-90 transition inline-flex items-center gap-2">
+            <span>⤢ OPEN FULL-SCREEN VIEWER</span>
+          </button>
+          <a href="https://portfolio-projects-gules.vercel.app/" target="_blank" rel="noopener noreferrer"
+            class="px-3.5 py-2.5 rounded-xl hairline-box font-mono text-xs font-semibold hover:border-[#ff3b1d] transition inline-flex items-center gap-1.5">
+            <span>Vercel Hub</span>
+            <span>↗</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Single Centered Live Project Stage (80% Width) with Blurred Prev/Next Project Backdrops -->
+      <div id="landingCardsGrid" class="w-full"></div>
+    </section>
+
+    <!-- SECTION 03: AI & CLOUD ENGINEERING BUILDS (3 Open-Source Flagships) -->
+    <section id="ai-builds" class="py-12 hairline-b space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-mono text-[#ff3b1d] uppercase tracking-wider">
+            <span class="signal-dot"></span>
+            <span>03 // AI &amp; CLOUD ENGINEERING BUILDS (03)</span>
+          </div>
+          <h2 class="font-display font-bold text-2xl sm:text-4xl mt-1">
+            Open-Source <span class="font-serif italic font-normal text-[#ff3b1d]">AI Agents &amp; Cloud Systems</span>
+          </h2>
+          <p class="text-xs sm:text-sm muted-text mt-1 max-w-2xl">
+            End-to-end backend systems, multi-agent LLM workflows, and isolated Docker developer tools built with
+            Python, Node.js, Redis, and WebSockets.
+          </p>
+        </div>
+        <a href="https://github.com/shadan-asad" target="_blank" rel="noopener noreferrer"
+          class="px-3.5 py-2.5 rounded-xl hairline-box font-mono text-xs font-semibold hover:border-[#ff3b1d] transition self-start sm:self-auto">
+          All GitHub Repos ↗
+        </a>
+      </div>
+
+      <div id="aiBuildsGrid" class="grid grid-cols-1 lg:grid-cols-3 gap-5"></div>
+    </section>
+
+    <!-- SECTION 04: TACTILE ENGINEERING LAB (3 Interactive Micro-Widgets) -->
+    <section id="ai-flow" class="py-12 hairline-b space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-mono text-[#ff3b1d] uppercase tracking-wider">04 // LIVE INTERACTIVE DEMOS</div>
+          <h2 class="font-display font-bold text-2xl sm:text-3xl mt-1">Try How My Apps Work</h2>
+        </div>
+        <span class="text-xs font-mono muted-text hidden sm:inline">CLICK &amp; TEST EACH DEMO BELOW</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+        <!-- WIDGET 1: ClaimPilot LangGraph Execution Simulator -->
+        <div class="hairline-box rounded-2xl p-5 flex flex-col justify-between space-y-4">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-[11px] font-mono">
+              <span class="text-[#ff3b1d] font-semibold">LAB.01 // LANGGRAPH ROUTER</span>
+              <a href="https://claimpilot-0hai.onrender.com/" target="_blank" rel="noopener noreferrer"
+                class="underline muted-text hover:opacity-100">Render API ↗</a>
+            </div>
+            <h3 class="font-display font-bold text-lg">ClaimPilot AI PDF Reader</h3>
+            <p class="text-xs muted-text">Click below to see how 3 AI agents read a hospital claim PDF and extract
+              patient, doctor, and bill details at once.</p>
+
+            <div class="grid grid-cols-4 gap-1.5 pt-2 text-center font-mono text-[10px]">
+              <div id="step-0" class="p-2 rounded hairline-box">01.PDF</div>
+              <div id="step-1" class="p-2 rounded hairline-box">02.SEG</div>
+              <div id="step-2" class="p-2 rounded hairline-box">03.3×LLM</div>
+              <div id="step-3" class="p-2 rounded hairline-box">04.JSON</div>
+            </div>
+
+            <pre id="simJsonBox"
+              class="p-3 rounded-xl bg-black/80 text-emerald-400 font-mono text-[10px] overflow-x-auto leading-relaxed border border-white/10">{
+  "claim_id": "CLM-2025-789",
+  "routed": ["id", "discharge", "bill"],
+  "billing": { "claimed": "$450.00", "status": "OK" }
+}</pre>
+          </div>
+
+          <div class="flex items-center justify-between gap-2 pt-2 hairline-t">
+            <button type="button" onclick="triggerPipelineStep()" id="simTriggerBtn"
+              class="px-3.5 py-2 rounded-lg bg-[#ff3b1d] text-white font-mono text-xs font-semibold hover:opacity-90 transition">
+              ▶ Run Pipeline (640ms)
+            </button>
+            <div class="flex items-center gap-2 font-mono text-[11px]">
+              <a href="https://github.com/meshadanasad/claimpilot" target="_blank" rel="noopener noreferrer"
+                class="muted-text hover:underline">GitHub ↗</a>
+              <a href="https://www.loom.com/share/2e794da4484b4ca09eedd78afb685e5f" target="_blank"
+                rel="noopener noreferrer" class="muted-text hover:underline">Loom ↗</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- WIDGET 2: BookMyTransit JPY ↔ INR Zero-Forex Calculator -->
+        <div class="hairline-box rounded-2xl p-5 flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between text-[11px] font-mono">
+              <span class="text-emerald-400 font-semibold">LAB.02 // BOOKMYTRANSIT ENGINE</span>
+              <a href="https://bookmytransit.com/" target="_blank" rel="noopener noreferrer"
+                class="underline muted-text hover:opacity-100">bookmytransit.com ↗</a>
+            </div>
+            <h3 class="font-display font-bold text-lg">BookMyTransit Cab Price Checker</h3>
+            <p class="text-xs muted-text">Pick a Japan airport route to see fixed cab prices in Indian Rupees (INR) with
+              zero bank forex fees.</p>
+
+            <div class="space-y-2 pt-1">
+              <div class="grid grid-cols-2 gap-1.5 font-mono text-[11px]">
+                <button type="button" onclick="selectTransitRoute(0)" id="routeBtn0"
+                  class="p-2 rounded bg-[#ff3b1d] text-white text-left">NRT → Tokyo</button>
+                <button type="button" onclick="selectTransitRoute(1)" id="routeBtn1"
+                  class="p-2 rounded hairline-box text-left">HND → Tokyo</button>
+                <button type="button" onclick="selectTransitRoute(2)" id="routeBtn2"
+                  class="p-2 rounded hairline-box text-left">KIX → Osaka</button>
+                <button type="button" onclick="selectTransitRoute(3)" id="routeBtn3"
+                  class="p-2 rounded hairline-box text-left">Kyoto Transfer</button>
+              </div>
+
+              <div
+                class="p-3 rounded-xl bg-black/80 border border-white/10 flex items-center justify-between font-mono">
+                <div>
+                  <div class="text-[10px] text-zinc-400" id="transitVehicleLabel">TOYOTA ALPHARD (MAX 6 PAX)</div>
+                  <div class="text-base font-bold text-white mt-0.5" id="transitPriceReadout">¥35,000 ≈ ₹20,996</div>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px]">0% FOREX FEE</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-2 hairline-t text-xs font-mono">
+            <span class="muted-text" id="transitSavingsNote">Saves ₹1,120 bank markup</span>
+            <a href="https://bookmytransit.com/" target="_blank" rel="noopener noreferrer"
+              class="text-[#ff3b1d] font-semibold hover:underline">Launch Booking App ↗</a>
+          </div>
+        </div>
+
+        <!-- WIDGET 3: Distributed Systems & AWS Latency / Throughput Dial -->
+        <div class="hairline-box rounded-2xl p-5 flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between text-[11px] font-mono">
+              <span class="text-amber-400 font-semibold">LAB.03 // CLOUD TELEMETRY</span>
+              <span>TRIANZ &amp; BEX CARD UK</span>
+            </div>
+            <h3 class="font-display font-bold text-lg">API Speed &amp; Cloud Cost Simulator</h3>
+            <p class="text-xs muted-text">Drag the traffic slider to see how my backend optimizations keep APIs 40%
+              faster while cutting AWS costs by 15%.</p>
+
+            <div class="space-y-2 pt-1">
+              <div class="flex items-center justify-between text-xs font-mono">
+                <span>CONCURRENT LOAD: <strong id="loadRpsLabel">1,200 RPS</strong></span>
+                <span class="text-emerald-400" id="latencyDeltaLabel">-40% P95 LATENCY</span>
+              </div>
+              <input id="loadSlider" type="range" min="200" max="5000" step="200" value="1200"
+                oninput="updateLatencyTelemetry(this.value)" class="w-full cursor-pointer" />
+
+              <div class="grid grid-cols-2 gap-2 pt-1 font-mono text-xs">
+                <div class="p-2.5 rounded-xl bg-black/80 border border-white/10">
+                  <div class="text-[10px] text-zinc-400">OPTIMIZED P95</div>
+                  <div id="optLatencyVal" class="text-base font-bold text-emerald-400">118 ms</div>
+                </div>
+                <div class="p-2.5 rounded-xl bg-black/80 border border-white/10">
+                  <div class="text-[10px] text-zinc-400">TERRAFORM IAC</div>
+                  <div class="text-base font-bold text-white">-15% AWS $</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-2 hairline-t text-xs font-mono">
+            <span class="muted-text">HashiCorp Certified (002)</span>
+            <a href="https://www.bexcard.co.uk/" target="_blank" rel="noopener noreferrer"
+              class="text-emerald-400 hover:underline">bexcard.co.uk ↗</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 05: EXPANDED WORK EXPERIENCE & DIRECT DISPATCH -->
+    <section id="experience" class="py-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- Experience Ledger (7 Cols) -->
+      <div class="lg:col-span-7 space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div class="flex items-center gap-2 text-xs font-mono text-[#ff3b1d] uppercase tracking-wider">
+              <span class="signal-dot"></span>
+              <span>05 // WORK EXPERIENCE (3+ YEARS)</span>
+            </div>
+            <h2 class="font-display font-bold text-2xl sm:text-3xl mt-1">Engineering Track Record</h2>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg hairline-box font-mono text-[11px] muted-text">FULLSTACK • BACKEND • AI •
+            AWS</span>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Trianz -->
+          <article class="hairline-box rounded-2xl p-5 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <div>
+                <div class="font-display font-bold text-lg">Trianz</div>
+                <div class="font-mono text-xs text-[#ff3b1d]">Fullstack / Software Engineer</div>
+              </div>
+              <span class="font-mono text-xs subtle-text flex-shrink-0">OCT 2023 – MAY 2025</span>
+            </div>
+            <ul class="space-y-1.5 text-xs sm:text-sm muted-text leading-relaxed">
+              <li class="flex items-start gap-2"><span class="text-[#ff3b1d] font-mono">→</span><span>Built and
+                  maintained production Angular frontend modules alongside Java Spring Boot and Node.js REST APIs backed
+                  by PostgreSQL.</span></li>
+              <li class="flex items-start gap-2"><span class="text-[#ff3b1d] font-mono">→</span><span>Optimized database
+                  queries and API response pipelines, reducing P95 latency by <strong
+                    style="color:var(--fg)">40%</strong> and cutting production defects by <strong
+                    style="color:var(--fg)">35%</strong>.</span></li>
+            </ul>
+            <div class="flex flex-wrap gap-1.5 pt-1 font-mono text-[10px]">
+              <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10">Java</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10">Spring Boot</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10">Node.js</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10">Angular</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10">PostgreSQL</span>
+            </div>
+          </article>
+
+          <!-- Bex Card UK -->
+          <article class="hairline-box rounded-2xl p-5 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <div>
+                <div class="font-display font-bold text-lg">
+                  <a href="https://www.bexcard.co.uk/" target="_blank" rel="noopener noreferrer"
+                    class="hover:text-[#ff3b1d] transition">Bex Card UK (bexcard.co.uk) ↗</a>
+                </div>
+                <div class="font-mono text-xs text-indigo-400">Software Engineer • UK Family Fintech</div>
+              </div>
+              <span class="font-mono text-xs subtle-text flex-shrink-0">FEB 2023 – OCT 2023</span>
+            </div>
+            <ul class="space-y-1.5 text-xs sm:text-sm muted-text leading-relaxed">
+              <li class="flex items-start gap-2"><span class="text-[#ff3b1d] font-mono">→</span><span>Built <strong
+                    style="color:var(--fg)">BexBuddy</strong>, an OpenAI-powered financial literacy assistant helping UK
+                  teens learn saving and investing concepts in plain English.</span></li>
+              <li class="flex items-start gap-2"><span class="text-[#ff3b1d] font-mono">→</span><span>Engineered
+                  event-driven AWS Lambda, SQS, and DynamoDB serverless pipelines with idempotent retries, cutting
+                  monthly AWS cloud costs by <strong style="color:var(--fg)">15%</strong> via Terraform IaC.</span></li>
+            </ul>
+            <div class="flex flex-wrap gap-1.5 pt-1 font-mono text-[10px]">
+              <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10">Node.js</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10">TypeScript</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10">OpenAI API</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10">AWS Lambda / SQS</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10">DynamoDB</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10">Terraform</span>
+            </div>
+          </article>
+
+          <!-- HighRadius -->
+          <article class="hairline-box rounded-2xl p-5 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <div>
+                <div class="font-display font-bold text-lg">HighRadius</div>
+                <div class="font-mono text-xs text-emerald-400">Fullstack Software Engineering Intern</div>
+              </div>
+              <span class="font-mono text-xs subtle-text flex-shrink-0">JAN 2022 – APR 2022</span>
+            </div>
+            <ul class="space-y-1.5 text-xs sm:text-sm muted-text leading-relaxed">
+              <li class="flex items-start gap-2"><span class="text-[#ff3b1d] font-mono">→</span><span>Built a React and
+                  Java B2B invoice management web application supporting <strong
+                    style="color:var(--fg)">45,000+</strong> enterprise billing records.</span></li>
+              <li class="flex items-start gap-2"><span class="text-[#ff3b1d] font-mono">→</span><span>Tuned MySQL
+                  queries and data-fetching pipelines to accelerate dashboard reporting by <strong
+                    style="color:var(--fg)">35%</strong>.</span></li>
+            </ul>
+            <div class="flex flex-wrap gap-1.5 pt-1 font-mono text-[10px]">
+              <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10">React</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10">Java</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10">MySQL</span>
+              <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10">REST APIs</span>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- Direct Dispatch & Contact Card (5 Cols) -->
+      <div id="contact" class="lg:col-span-5 lg:sticky lg:top-16 hairline-box rounded-2xl p-6 space-y-4">
+        <div class="flex items-center justify-between text-xs font-mono">
+          <span class="text-[#ff3b1d] font-semibold">06 // LET'S WORK TOGETHER</span>
+          <span class="led-dot"></span>
+        </div>
+        <h3 class="font-display font-bold text-2xl">Available for Fullstack AI Roles &amp; Client Web Apps.</h3>
+        <p class="text-xs sm:text-sm muted-text leading-relaxed">Immediate joiner for full-time Fullstack &amp; AI
+          Developer roles, or fast
+          delivery on custom web apps &amp; 3D landing pages.</p>
+
+        <!-- Scannable Freelance Scope Pills -->
+        <div class="flex flex-wrap gap-1.5 pt-1 font-mono text-[11px]">
+          <span
+            class="px-2.5 py-1 rounded-lg bg-[#ff3b1d]/10 text-[#ff3b1d] border border-[#ff3b1d]/30 font-semibold">Fullstack
+            MVPs</span>
+          <span
+            class="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">AI
+            Agents &amp; Automation</span>
+          <span
+            class="px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 font-semibold">Interactive
+            3D Landing Pages</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 pt-1 font-mono text-xs">
+          <a href="mailto:meshadanasad@gmail.com"
+            class="p-3 rounded-xl bg-[#ff3b1d] text-white font-semibold text-center hover:opacity-90 transition">
+            Email Directly ↗
+          </a>
+          <button type="button" onclick="copyText('meshadanasad@gmail.com', 'Copied meshadanasad@gmail.com')"
+            class="p-3 rounded-xl hairline-box font-semibold text-center hover:border-[#ff3b1d] transition">
+            Copy Email
+          </button>
+          <a href="https://github.com/shadan-asad" target="_blank" rel="noopener noreferrer"
+            class="p-2.5 rounded-xl hairline-box text-center muted-text hover:opacity-100 transition">
+            github.com/shadan-asad ↗
+          </a>
+          <a href="https://linkedin.com/in/shadan-asad" target="_blank" rel="noopener noreferrer"
+            class="p-2.5 rounded-xl hairline-box text-center muted-text hover:opacity-100 transition">
+            LinkedIn Profile ↗
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FLOATING MORPHING DYNAMIC ISLAND DOCK -->
+  <div class="fixed bottom-4 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
+    <nav class="dock-pill rounded-full px-2.5 py-1.5 flex items-center gap-1 pointer-events-auto text-xs font-mono">
+      <button type="button" onclick="scrollToSection('client-apps')"
+        class="px-3 py-1.5 rounded-full hover:bg-white/10 transition flex items-center gap-1.5">
+        <span class="signal-dot"></span>
+        <span>Client (5)</span>
+      </button>
+      <button type="button" onclick="scrollToSection('landing-hub')"
+        class="px-3 py-1.5 rounded-full hover:bg-white/10 transition">
+        3D Vault (7)
+      </button>
+      <button type="button" onclick="scrollToSection('ai-builds')"
+        class="px-3 py-1.5 rounded-full hover:bg-white/10 transition hidden sm:inline-block">
+        AI Builds (3)
+      </button>
+      <button type="button" onclick="scrollToSection('ai-flow')"
+        class="px-3 py-1.5 rounded-full hover:bg-white/10 transition hidden sm:inline-block">
+        Lab
+      </button>
+      <button type="button" onclick="scrollToSection('experience')"
+        class="px-3 py-1.5 rounded-full hover:bg-white/10 transition hidden md:inline-block">
+        Experience
+      </button>
+      <button type="button" onclick="openQuickSearch()"
+        class="px-3 py-1.5 rounded-full bg-[#ff3b1d] text-white font-semibold transition">
+        ⌘K
+      </button>
+    </nav>
+  </div>
+
+  <!-- ON-DEMAND SPECS MODAL -->
+  <div id="detailModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="hairline-box rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <span id="modalTag"
+            class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-[#ff3b1d]/20 text-[#ff3b1d]"></span>
+          <h3 id="modalHeading" class="font-display font-bold text-xl mt-1"></h3>
+        </div>
+        <button type="button" onclick="closeModal()" class="px-2.5 py-1 rounded hairline-box text-xs">✕</button>
+      </div>
+      <p id="modalSummary" class="text-xs sm:text-sm muted-text leading-relaxed"></p>
+      <ul id="modalBullets" class="space-y-1.5 text-xs muted-text"></ul>
+      <div id="modalActions" class="pt-3 hairline-t flex items-center justify-end gap-2 font-mono"></div>
+    </div>
+  </div>
+
+  <!-- FULL-SCREEN INTERACTIVE LANDING PAGE MODAL -->
+  <div id="landingFullscreenModal" class="fixed inset-0 z-50 hidden flex-col bg-[#050508] text-white">
+    <div
+      class="h-14 px-3 sm:px-6 border-b border-white/10 bg-black/95 backdrop-blur-md flex items-center justify-between gap-2 flex-shrink-0 font-mono text-xs">
+      <div class="flex items-center gap-2 min-w-0">
+        <button type="button" onclick="stepLandingModal(-1)"
+          class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition flex items-center gap-1 flex-shrink-0"
+          title="Previous Project [←]">
+          <span>←</span>
+          <span class="hidden sm:inline">Prev</span>
+        </button>
+
+        <div class="flex items-center gap-1 overflow-x-auto py-1" id="fsChannelTabs"></div>
+
+        <button type="button" onclick="stepLandingModal(1)"
+          class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition flex items-center gap-1 flex-shrink-0"
+          title="Next Project [→]">
+          <span class="hidden sm:inline">Next</span>
+          <span>→</span>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <span id="fsCounterBadge"
+          class="hidden md:inline-block px-2 py-1 rounded bg-white/5 text-zinc-400 text-[11px]">01 / 07</span>
+        <a id="fsExternalUrl" href="https://portfolio-projects-gules.vercel.app/aetheria" target="_blank"
+          rel="noopener noreferrer"
+          class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-zinc-200 text-[11px] transition">
+          <span>Open Tab</span>
+          <span>↗</span>
+        </a>
+        <button type="button" onclick="closeLandingFullscreen()"
+          class="px-3.5 py-1.5 rounded-lg bg-[#ff3b1d] text-white font-semibold hover:opacity-90 transition text-[11px]">
+          ✕ Exit [ESC]
+        </button>
+      </div>
+    </div>
+
+    <div class="relative flex-1 w-full bg-[#050508]">
+      <div id="fsIframeLoader"
+        class="absolute inset-0 z-10 flex items-center justify-center bg-[#050508] pointer-events-none transition-opacity duration-200">
+        <div
+          class="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/5 border border-white/10 font-mono text-xs text-zinc-300">
+          <span class="w-2 h-2 rounded-full bg-[#ff3b1d] animate-ping"></span>
+          <span id="fsLoaderText">Loading live page...</span>
+        </div>
+      </div>
+
+      <iframe id="fsLiveIframe" src="about:blank" title="Full-Screen Live Landing Page" onload="onFsIframeLoad()"
+        class="w-full h-full border-0 block bg-[#050508]" allow="autoplay; fullscreen"></iframe>
+
+      <button type="button" onclick="stepLandingModal(1)" id="fsNextFloatingBtn"
+        class="absolute bottom-5 right-5 z-20 px-4 py-2.5 rounded-full bg-black/85 hover:bg-[#ff3b1d] backdrop-blur-xl border border-white/20 text-white font-mono text-xs font-semibold shadow-2xl transition flex items-center gap-2">
+        <span class="text-zinc-400">NEXT:</span>
+        <span id="fsNextLabel">Aetheris →</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- COMMAND PALETTE MODAL (⌘K) -->
+  <div id="searchModal"
+    class="fixed inset-0 z-50 hidden items-start justify-center pt-16 p-4 bg-black/80 backdrop-blur-sm">
+    <div class="hairline-box rounded-2xl max-w-lg w-full p-4 shadow-2xl">
+      <div class="flex items-center gap-2 hairline-b pb-2.5">
+        <span class="signal-dot"></span>
+        <input id="quickSearchInput" type="text" oninput="renderSearchItems(this.value)"
+          placeholder="Type to jump to any live project, repo, or 3D world..."
+          class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-mono" />
+        <button type="button" onclick="closeQuickSearch()"
+          class="px-2 py-0.5 rounded hairline-box text-[10px] font-mono">ESC</button>
+      </div>
+      <div id="quickSearchResults" class="mt-2.5 max-h-72 overflow-y-auto space-y-1"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast"
+    class="fixed top-16 right-5 z-50 hidden px-4 py-2 rounded-xl bg-[#ff3b1d] text-white font-mono text-xs shadow-2xl">
+  </div>
+
+  <script>
+    // Web Audio API Mechanical Tactile Click Synthesizer
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function playTick(freq = 900, duration = 0.018) {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) audioCtx = new AudioContextClass();
+        }
+        if (!audioCtx) return;
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) { }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const led = document.getElementById('soundLed');
+      const label = document.getElementById('soundLabel');
+      if (led) led.className = soundEnabled ? 'w-1.5 h-1.5 rounded-full bg-emerald-400' : 'w-1.5 h-1.5 rounded-full bg-zinc-500';
+      if (label) label.textContent = soundEnabled ? 'SFX: ON' : 'SFX: OFF';
+      if (soundEnabled) playTick(1200, 0.025);
+    }
+    window.toggleSound = toggleSound;
+
+    function togglePaperMode() {
+      const root = document.documentElement;
+      const isPaper = root.getAttribute('data-paper') === 'true';
+      if (isPaper) {
+        root.removeAttribute('data-paper');
+        document.getElementById('themeModeLabel').textContent = 'CARBON';
+      } else {
+        root.setAttribute('data-paper', 'true');
+        document.getElementById('themeModeLabel').textContent = 'PAPER';
+      }
+      playTick(750, 0.025);
+      showToast(isPaper ? 'Switched to Carbon Dark Mode' : 'Switched to Swiss Paper Mode');
+    }
+    window.togglePaperMode = togglePaperMode;
+
+    // 9 Verified Directory Entries (Command Palette + AI Builds)
+    const WORK_ITEMS = [
+      {
+        id: 'claimpilot',
+        index: '01',
+        kind: 'ai',
+        badge: 'LANGGRAPH × GEMINI',
+        title: 'ClaimPilot AI',
+        arch: 'LangGraph • FastAPI • Gemini Vision',
+        oneLiner: 'AI tool that reads scanned insurance & hospital PDFs and extracts patient, doctor, and bill data into clean JSON.',
+        metric: 'READS 9 DOCUMENT TYPES AT ONCE',
+        primaryUrl: 'https://claimpilot-0hai.onrender.com/',
+        primaryLabel: 'Live API ↗',
+        secondaryUrl: 'https://github.com/meshadanasad/claimpilot',
+        secondaryLabel: 'GitHub ↗',
+        extraUrl: 'https://www.loom.com/share/2e794da4484b4ca09eedd78afb685e5f',
+        extraLabel: 'Loom ↗',
+        bullets: [
+          'Turns each PDF page into an image so even blurry scanned hospital bills are read accurately.',
+          'Runs 3 AI agents in parallel to pull patient ID, discharge notes, and bill totals.',
+          'Never crashes if a page is missing — simply marks missing sections as empty.'
+        ]
+      },
+      {
+        id: 'practaluma',
+        index: '02',
+        kind: 'client',
+        badge: 'CLIENT • AI HEALTHTECH',
+        title: 'PractaLuma',
+        arch: 'Next.js • AI Scribe • 180+ Assessments',
+        oneLiner: 'Fullstack clinic management web app with an AI note-taker, 180+ psychology tests, patient portal, and billing.',
+        metric: '18 CLINIC TOOLS • 180+ TESTS',
+        primaryUrl: 'https://www.practaluma.com/',
+        primaryLabel: 'practaluma.com ↗',
+        secondaryUrl: 'https://www.practaluma.com/features',
+        secondaryLabel: 'Features ↗',
+        bullets: [
+          'AI Scribe listens to therapy sessions and writes draft clinical notes automatically.',
+          'Includes 180+ psychology assessments, appointment booking, patient portal, and billing.'
+        ]
+      },
+      {
+        id: 'bexcard',
+        index: '03',
+        kind: 'client',
+        badge: 'CLIENT • UK FINTECH',
+        title: 'Bex Card UK',
+        arch: 'Node.js • AWS Lambda/SQS • OpenAI',
+        oneLiner: 'UK family banking platform with a teen prepaid card, savings goals, and an OpenAI-powered money tutor.',
+        metric: 'CUT AWS CLOUD COST BY 15%',
+        primaryUrl: 'https://www.bexcard.co.uk/',
+        primaryLabel: 'bexcard.co.uk ↗',
+        secondaryUrl: 'https://www.bexcard.co.uk/why-bex',
+        secondaryLabel: 'Why Bex ↗',
+        bullets: [
+          'Built BexBuddy, an OpenAI feature that explains saving and investing to teens in plain English.',
+          'Built reliable AWS cloud services and cut monthly AWS server costs by 15% with Terraform.'
+        ]
+      },
+      {
+        id: 'bookmytransit',
+        index: '04',
+        kind: 'client',
+        badge: 'CLIENT • TRAVEL TECH',
+        title: 'BookMyTransit',
+        arch: 'Next.js 16 • Supabase • Razorpay INR',
+        oneLiner: 'Fullstack Japan airport cab booking web app where Indian travelers book and pay directly in INR (₹).',
+        metric: 'DIRECT INR CHECKOUT • ZERO FOREX',
+        primaryUrl: 'https://bookmytransit.com/',
+        primaryLabel: 'bookmytransit.com ↗',
+        bullets: [
+          'Lets Indian families book private vans in Tokyo, Osaka, Kyoto, and Hiroshima using UPI or cards in INR.',
+          'Built with Next.js 16 SSR, pre-rendered SEO route & guide pages, JSON-LD, and English/Hindi support.'
+        ]
+      },
+      {
+        id: 'ai-pr-reviewer',
+        index: '05',
+        kind: 'ai',
+        badge: 'AGENTIC DEVTOOL',
+        title: 'AI PR Code Reviewer',
+        arch: 'Node.js • Gemini API • Redis Queues',
+        oneLiner: 'AI code review web app that checks GitHub pull requests and points out bugs, security risks, and fixes.',
+        metric: 'AUTOMATIC AI CODE REVIEWS',
+        primaryUrl: 'https://ai-pr-reviewer.onrender.com/result/30',
+        primaryLabel: 'Live Demo #30 ↗',
+        secondaryUrl: 'https://github.com/shadan-asad/ai-pr-reviewer',
+        secondaryLabel: 'GitHub ↗',
+        bullets: [
+          'Reads code changes using Google Gemini AI and writes clear improvement tips for developers.',
+          'Uses Redis background queues and PostgreSQL so multiple reviews run smoothly at once.'
+        ]
+      },
+      {
+        id: 'zad-compiler',
+        index: '06',
+        kind: 'ai',
+        badge: 'CLOUD SANDBOX',
+        title: 'Zad Compiler',
+        arch: 'Node.js • Docker • WebSockets',
+        oneLiner: 'Fullstack online code editor where you write and run code in the browser with live terminal output.',
+        metric: 'SAFE DOCKER CODE RUNNER',
+        primaryUrl: 'https://zad-compiler-fe.vercel.app/',
+        primaryLabel: 'Live App ↗',
+        secondaryUrl: 'https://github.com/shadan-asad/zad-compiler',
+        secondaryLabel: 'GitHub ↗',
+        bullets: [
+          'Runs each program inside a secure, isolated Docker container on the server.',
+          'Streams live output straight to the browser terminal using WebSockets.'
+        ]
+      },
+      {
+        id: 'servgenie',
+        index: '07',
+        kind: 'client',
+        badge: 'CLIENT • AI MARKETPLACE',
+        title: 'ServGenie',
+        arch: 'React • Node.js • Voice/Text AI',
+        oneLiner: 'Fullstack local services marketplace where customers post jobs and verified pros bid live, plus an AI support app.',
+        metric: 'LIVE PRICE BIDDING + AI VOICE APP',
+        primaryUrl: 'https://servgenie.co/',
+        primaryLabel: 'servgenie.co ↗',
+        secondaryUrl: 'https://play.google.com/store/apps/details?id=com.ekl.servgenie&hl=en_IN',
+        secondaryLabel: 'Play Store ↗',
+        bullets: [
+          'Customers post service requests and negotiate prices live with background-verified providers.',
+          'Includes a 24×7 AI voice and text troubleshooting app on Google Play.'
+        ]
+      },
+      {
+        id: 'nibindia',
+        index: '08',
+        kind: 'client',
+        badge: 'CLIENT • NATIONAL PORTAL',
+        title: 'NIB India 2026',
+        arch: 'React • TypeScript • Tailwind',
+        oneLiner: 'Fullstack website for India’s National Innovators Battle — handling student AI & robotics registrations.',
+        metric: 'NATIONAL AI & ROBOTICS PORTAL',
+        primaryUrl: 'https://www.nibindia.org/',
+        primaryLabel: 'nibindia.org ↗',
+        bullets: [
+          'Manages online idea submissions, team sign-ups, and event schedules for students across India.',
+          'Built with React, TypeScript, and Tailwind CSS for fast mobile and desktop browsing.'
+        ]
+      },
+      {
+        id: 'webgl-vault',
+        index: '09',
+        kind: 'webgl',
+        badge: '7 INTERACTIVE 3D & AI SITES',
+        title: '3D & AI Landing Pages',
+        arch: 'Three.js • HTML5 Canvas • Web Audio',
+        oneLiner: 'Collection of 7 interactive 3D and AI startup landing pages (Prism AI, Aetheris, Aetheria 1884, Arkhe, Solstice, Synthoma, Le Silence).',
+        metric: '7 FULL-SCREEN 3D DEMOS',
+        primaryUrl: 'https://portfolio-projects-gules.vercel.app/',
+        primaryLabel: 'Launch Vault ↗',
+        bullets: [
+          'Includes Prism AI (3D world simulation), Aetheris (zero-dependency 3D neural edge canvas), and Aetheria 1884 (exploding 3D Swiss tourbillon).',
+          'Also includes Arkhe (256-piston kinetic surface), Solstice (3D glass decanter), Synthoma (6,400-node ferrofluid compute), and Le Silence.'
+        ]
+      }
+    ];
+
+    const LANDING_SHOWCASE = [
+      {
+        index: '01',
+        id: 'aetheria',
+        name: 'Aetheria Genève 1884',
+        shortName: 'Aetheria',
+        url: 'https://portfolio-projects-gules.vercel.app/aetheria',
+        domain: 'portfolio-projects-gules.vercel.app/aetheria',
+        tag: '3D Swiss Watch'
+      },
+      {
+        index: '02',
+        id: 'aetheris',
+        name: 'Aetheris — Hyperion v3.4',
+        shortName: 'Aetheris',
+        url: 'https://portfolio-projects-gules.vercel.app/aetheris',
+        domain: 'portfolio-projects-gules.vercel.app/aetheris',
+        tag: 'Neural Edge AI'
+      },
+      {
+        index: '03',
+        id: 'arkhe',
+        name: 'Arkhe™ Programmable Matter',
+        shortName: 'Arkhe™',
+        url: 'https://portfolio-projects-gules.vercel.app/arkhe',
+        domain: 'portfolio-projects-gules.vercel.app/arkhe',
+        tag: 'Kinetic 3D Surface'
+      },
+      {
+        index: '04',
+        id: 'prism',
+        name: 'Prism AI — WorldEngine™',
+        shortName: 'Prism AI',
+        url: 'https://portfolio-projects-gules.vercel.app/prism',
+        domain: 'portfolio-projects-gules.vercel.app/prism',
+        tag: '3D World Sim AI'
+      },
+      {
+        index: '05',
+        id: 'solstice',
+        name: 'Solstice™ Botanicals',
+        shortName: 'Solstice™',
+        url: 'https://portfolio-projects-gules.vercel.app/solstice',
+        domain: 'portfolio-projects-gules.vercel.app/solstice',
+        tag: '3D Beverage Brand'
+      },
+      {
+        index: '06',
+        id: 'synthoma',
+        name: 'Synthoma™ Foundry',
+        shortName: 'Synthoma™',
+        url: 'https://portfolio-projects-gules.vercel.app/synthoma',
+        domain: 'portfolio-projects-gules.vercel.app/synthoma',
+        tag: 'Neural Fluid AI'
+      },
+      {
+        index: '07',
+        id: 'le-silence',
+        name: 'Le Silence',
+        shortName: 'Le Silence',
+        url: 'https://portfolio-projects-gules.vercel.app/le-silence',
+        domain: 'portfolio-projects-gules.vercel.app/le-silence',
+        tag: 'Interactive 3D Experience'
+      }
+    ];
+
+    const TRANSIT_ROUTES = [
+      { route: 'Narita (NRT) → Tokyo', vehicle: 'TOYOTA ALPHARD (MAX 6 PAX)', price: '¥35,000 ≈ ₹20,996', savings: 'Saves ₹1,120 bank forex markup' },
+      { route: 'Haneda (HND) → Tokyo', vehicle: 'TOYOTA ALPHARD (MAX 6 PAX)', price: '¥23,000 ≈ ₹13,797', savings: 'Saves ₹740 bank forex markup' },
+      { route: 'Kansai (KIX) → Osaka', vehicle: 'TOYOTA HIACE (MAX 10 PAX)', price: '¥23,000 ≈ ₹13,797', savings: 'Saves ₹740 bank forex markup' },
+      { route: 'Kyoto Station → Hotel', vehicle: 'EXECUTIVE SEDAN / ALPHARD', price: '¥18,000 ≈ ₹10,798', savings: 'Saves ₹580 bank forex markup' }
+    ];
+
+    let activeLandingIdx = 0;
+
+    function scrollToSection(id) {
+      playTick(850, 0.015);
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    window.scrollToSection = scrollToSection;
+
+    // Section 02: Single Centered Live WebGL Landing Page (80% Width) + Blurred Prev/Next Projects & Playful Transition
+    const LANDING_BACKDROP_GRADIENTS = [
+      'radial-gradient(circle at 50% 35%, rgba(245, 158, 11, 0.34), rgba(17, 17, 20, 0.96) 68%)',
+      'radial-gradient(circle at 50% 35%, rgba(99, 102, 241, 0.36), rgba(10, 12, 24, 0.96) 68%)',
+      'radial-gradient(circle at 50% 35%, rgba(255, 59, 29, 0.34), rgba(15, 15, 18, 0.96) 68%)',
+      'radial-gradient(circle at 50% 35%, rgba(168, 85, 247, 0.36), rgba(12, 10, 22, 0.96) 68%)',
+      'radial-gradient(circle at 50% 35%, rgba(16, 185, 129, 0.34), rgba(10, 18, 16, 0.96) 68%)',
+      'radial-gradient(circle at 50% 35%, rgba(6, 182, 212, 0.36), rgba(9, 14, 20, 0.96) 68%)',
+      'radial-gradient(circle at 50% 35%, rgba(212, 175, 132, 0.34), rgba(14, 13, 15, 0.96) 68%)'
+    ];
+
+    let landingTransitionDir = null;
+    let isLandingTransitioning = false;
+
+    function renderLandingShowcase() {
+      const container = document.getElementById('landingCardsGrid');
+      if (!container) return;
+
+      const totalStr = String(LANDING_SHOWCASE.length).padStart(2, '0');
+      const item = LANDING_SHOWCASE[activeLandingIdx] || LANDING_SHOWCASE[0];
+      const prevIdx = (activeLandingIdx - 1 + LANDING_SHOWCASE.length) % LANDING_SHOWCASE.length;
+      const nextIdx = (activeLandingIdx + 1) % LANDING_SHOWCASE.length;
+      const prevItem = LANDING_SHOWCASE[prevIdx];
+      const nextItem = LANDING_SHOWCASE[nextIdx];
+      const prevBg = LANDING_BACKDROP_GRADIENTS[prevIdx % LANDING_BACKDROP_GRADIENTS.length];
+      const nextBg = LANDING_BACKDROP_GRADIENTS[nextIdx % LANDING_BACKDROP_GRADIENTS.length];
+      const enterClass = landingTransitionDir === 'next'
+        ? 'showcase-enter-next'
+        : landingTransitionDir === 'prev'
+          ? 'showcase-enter-prev'
+          : '';
+
+      container.innerHTML = `
+        <div class="relative w-full py-2 showcase-stage">
+          <!-- Blurred Previous Project Peeking in Background (Left) -->
+          <div
+            onclick="stepLandingShowcase(-1)"
+            role="button"
+            tabindex="0"
+            aria-label="Load previous project: ${prevItem.name}"
+            title="Previous: ${prevItem.name}"
+            class="hidden md:flex flex-col justify-between absolute top-1/2 left-0 w-[62%] h-[88%] z-10 rounded-2xl overflow-hidden hairline-box cursor-pointer select-none showcase-peek-card showcase-peek-left"
+            style="background: ${prevBg};"
+          >
+            <div class="w-full h-full flex flex-col justify-between blur-[3px] scale-[1.01] pointer-events-none">
+              <div class="px-4 py-2.5 bg-black/80 border-b border-white/10 flex items-center justify-between font-mono text-[11px]">
+                <span class="text-zinc-400 truncate">${prevItem.domain}</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500/70"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-400/70"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400/70"></span>
+                </div>
+              </div>
+
+              <div class="flex-1 flex flex-col items-start justify-center pl-8 text-left">
+                <span class="font-mono text-[10px] uppercase tracking-widest text-[#ff3b1d]">PREVIOUS // ${prevItem.index}</span>
+                <div class="font-display font-extrabold text-3xl lg:text-4xl text-white/90 mt-1">${prevItem.shortName}</div>
+                <div class="font-mono text-xs text-zinc-300/80 mt-1">${prevItem.tag}</div>
+              </div>
+
+              <div class="px-4 py-3 bg-black/70 border-t border-white/10 flex items-center justify-start font-mono text-xs text-zinc-400">
+                <span>${prevItem.index} / ${totalStr}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Blurred Next Project Peeking in Background (Right) -->
+          <div
+            onclick="stepLandingShowcase(1)"
+            role="button"
+            tabindex="0"
+            aria-label="Load next project: ${nextItem.name}"
+            title="Next: ${nextItem.name}"
+            class="hidden md:flex flex-col justify-between absolute top-1/2 right-0 w-[62%] h-[88%] z-10 rounded-2xl overflow-hidden hairline-box cursor-pointer select-none showcase-peek-card showcase-peek-right"
+            style="background: ${nextBg};"
+          >
+            <div class="w-full h-full flex flex-col justify-between blur-[3px] scale-[1.01] pointer-events-none">
+              <div class="px-4 py-2.5 bg-black/80 border-b border-white/10 flex items-center justify-between font-mono text-[11px]">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500/70"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-400/70"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400/70"></span>
+                </div>
+                <span class="text-zinc-400 truncate">${nextItem.domain}</span>
+              </div>
+
+              <div class="flex-1 flex flex-col items-end justify-center pr-8 text-right">
+                <span class="font-mono text-[10px] uppercase tracking-widest text-[#ff3b1d]">UP NEXT // ${nextItem.index}</span>
+                <div class="font-display font-extrabold text-3xl lg:text-4xl text-white/90 mt-1">${nextItem.shortName}</div>
+                <div class="font-mono text-xs text-zinc-300/80 mt-1">${nextItem.tag}</div>
+              </div>
+
+              <div class="px-4 py-3 bg-black/70 border-t border-white/10 flex items-center justify-end font-mono text-xs text-zinc-400">
+                <span>${nextItem.index} / ${totalStr}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating Left Arrow Button -->
+          <button
+            type="button"
+            onclick="stepLandingShowcase(-1)"
+            aria-label="Previous project"
+            title="Previous: ${prevItem.shortName}"
+            class="hidden md:flex items-center justify-center absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-white hover:border-[#ff3b1d] hover:bg-[#ff3b1d] hover:scale-110 active:scale-90 font-mono text-lg transition duration-200 shadow-2xl"
+          >
+            ←
+          </button>
+
+          <!-- Centered Active WebGL Project Card (80% Width) -->
+          <article id="activeLandingCard" class="w-full md:w-[80%] mx-auto relative z-20 hairline-box rounded-2xl overflow-hidden flex flex-col justify-between transition hover:border-[#ff3b1d] shadow-[0_24px_80px_rgba(0,0,0,0.8)] ${enterClass}">
+            <div class="px-3.5 py-2.5 bg-black/90 border-b border-white/10 flex items-center justify-between gap-2 font-mono text-[11px]">
+              <div class="flex items-center gap-1.5 min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80 flex-shrink-0"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-400/80 flex-shrink-0"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400/80 flex-shrink-0"></span>
+                <span class="ml-2 text-zinc-400 truncate">${item.domain}</span>
+              </div>
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <span class="px-2 py-0.5 rounded bg-white/5 text-zinc-400 text-[10px]">${item.index} / ${totalStr}</span>
+                <button type="button" onclick="openLandingFullscreen(${activeLandingIdx})" class="px-2.5 py-1 rounded bg-white/10 text-white hover:bg-[#ff3b1d] transition font-semibold text-[10px]">
+                  ⤢ Full Screen
+                </button>
+              </div>
+            </div>
+
+            <div class="relative w-full aspect-[16/10] bg-[#050508] overflow-hidden">
+              <div id="inlineLandingLoader" class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#050508] pointer-events-none transition-opacity duration-300">
+                <div class="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/5 border border-white/10 font-mono text-xs text-zinc-300">
+                  <span class="w-2 h-2 rounded-full bg-[#ff3b1d] animate-ping"></span>
+                  <span>Loading ${item.shortName}...</span>
+                </div>
+                <div class="w-40 h-1 rounded-full bg-white/10 overflow-hidden">
+                  <div class="w-1/2 h-full rounded-full bg-[#ff3b1d] showcase-loader-bar"></div>
+                </div>
+              </div>
+              <iframe
+                id="inlineLandingIframe"
+                src="${item.url}"
+                title="${item.name}"
+                onload="onInlineLandingLoad()"
+                class="w-full h-full border-0 block bg-[#050508]"
+                allow="autoplay; fullscreen"
+              ></iframe>
+            </div>
+
+            <div class="px-4 py-3 bg-black/70 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 font-mono text-xs">
+              <div class="min-w-0">
+                <div class="font-display font-bold text-base text-white truncate">${item.index} // ${item.name}</div>
+                <div class="text-[11px] text-zinc-400 truncate">${item.tag}</div>
+              </div>
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <button type="button" onclick="stepLandingShowcase(-1)" aria-label="Previous project" class="md:hidden px-2.5 py-1.5 rounded-lg hairline-box text-xs hover:border-[#ff3b1d] active:scale-90 transition">←</button>
+                <button type="button" onclick="stepLandingShowcase(1)" aria-label="Next project" class="md:hidden px-2.5 py-1.5 rounded-lg hairline-box text-xs hover:border-[#ff3b1d] active:scale-90 transition">→</button>
+                <button type="button" onclick="openLandingFullscreen(${activeLandingIdx})" class="px-3 py-1.5 rounded-lg bg-[#ff3b1d] text-white font-semibold text-[11px] hover:opacity-90 transition">
+                  ⤢ Full Screen
+                </button>
+                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg hairline-box text-[11px] muted-text hover:opacity-100 transition">
+                  ↗
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Floating Right Arrow Button -->
+          <button
+            type="button"
+            onclick="stepLandingShowcase(1)"
+            aria-label="Next project"
+            title="Next: ${nextItem.shortName}"
+            class="hidden md:flex items-center justify-center absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-white hover:border-[#ff3b1d] hover:bg-[#ff3b1d] hover:scale-110 active:scale-90 font-mono text-lg transition duration-200 shadow-2xl"
+          >
+            →
+          </button>
+        </div>
+
+        <!-- Compact Project Indicator Strip -->
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-1.5 font-mono text-[11px]">
+          ${LANDING_SHOWCASE.map((x, i) => `
+            <button
+              type="button"
+              onclick="selectInlineLanding(${i})"
+              class="px-2.5 py-1 rounded-lg transition ${i === activeLandingIdx ? 'bg-[#ff3b1d] text-white font-semibold' : 'hairline-box muted-text hover:opacity-100'}"
+            >
+              ${x.index} ${x.shortName}
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function onInlineLandingLoad() {
+      const loader = document.getElementById('inlineLandingLoader');
+      if (loader) loader.classList.add('opacity-0');
+    }
+    window.onInlineLandingLoad = onInlineLandingLoad;
+
+    function transitionLandingShowcase(targetIdx, direction) {
+      if (isLandingTransitioning) return;
+      isLandingTransitioning = true;
+      playTick(direction === 'next' ? 1140 : 980, 0.02);
+
+      const activeCard = document.getElementById('activeLandingCard');
+      if (activeCard) {
+        activeCard.classList.remove('showcase-enter-next', 'showcase-enter-prev');
+        activeCard.classList.add(direction === 'next' ? 'showcase-exit-next' : 'showcase-exit-prev');
+      }
+
+      setTimeout(() => {
+        activeLandingIdx = targetIdx;
+        landingTransitionDir = direction;
+        renderLandingShowcase();
+        isLandingTransitioning = false;
+      }, 190);
+    }
+
+    function stepLandingShowcase(delta) {
+      const nextIdx = (activeLandingIdx + delta + LANDING_SHOWCASE.length) % LANDING_SHOWCASE.length;
+      transitionLandingShowcase(nextIdx, delta >= 0 ? 'next' : 'prev');
+    }
+    window.stepLandingShowcase = stepLandingShowcase;
+
+    function selectInlineLanding(idx) {
+      if (activeLandingIdx === idx) return;
+      const direction = idx > activeLandingIdx ? 'next' : 'prev';
+      transitionLandingShowcase(idx, direction);
+    }
+    window.selectInlineLanding = selectInlineLanding;
+
+    function selectLanding(idx) {
+      activeLandingIdx = idx;
+      playTick(1120, 0.018);
+      updateFullscreenLandingModal();
+    }
+    window.selectLanding = selectLanding;
+
+    function openLandingFullscreen(idx) {
+      activeLandingIdx = typeof idx === 'number' ? idx : activeLandingIdx;
+      playTick(1280, 0.025);
+      const inlineIframe = document.getElementById('inlineLandingIframe');
+      if (inlineIframe) inlineIframe.src = 'about:blank';
+      const modal = document.getElementById('landingFullscreenModal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+      updateFullscreenLandingModal();
+    }
+    window.openLandingFullscreen = openLandingFullscreen;
+
+    function closeLandingFullscreen() {
+      playTick(740, 0.02);
+      const modal = document.getElementById('landingFullscreenModal');
+      const iframe = document.getElementById('fsLiveIframe');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+      if (iframe) iframe.src = 'about:blank';
+      document.body.style.overflow = '';
+      renderLandingShowcase();
+    }
+    window.closeLandingFullscreen = closeLandingFullscreen;
+
+    function stepLandingModal(delta) {
+      const nextIdx = (activeLandingIdx + delta + LANDING_SHOWCASE.length) % LANDING_SHOWCASE.length;
+      selectLanding(nextIdx);
+    }
+    window.stepLandingModal = stepLandingModal;
+
+    function onFsIframeLoad() {
+      const loader = document.getElementById('fsIframeLoader');
+      if (loader) loader.classList.add('opacity-0');
+    }
+    window.onFsIframeLoad = onFsIframeLoad;
+
+    function updateFullscreenLandingModal() {
+      const item = LANDING_SHOWCASE[activeLandingIdx] || LANDING_SHOWCASE[0];
+      const nextItem = LANDING_SHOWCASE[(activeLandingIdx + 1) % LANDING_SHOWCASE.length];
+      const iframe = document.getElementById('fsLiveIframe');
+      const extLink = document.getElementById('fsExternalUrl');
+      const tabsEl = document.getElementById('fsChannelTabs');
+      const counterEl = document.getElementById('fsCounterBadge');
+      const nextLabelEl = document.getElementById('fsNextLabel');
+      const loader = document.getElementById('fsIframeLoader');
+      const loaderText = document.getElementById('fsLoaderText');
+
+      if (loader) loader.classList.remove('opacity-0');
+      if (loaderText) loaderText.textContent = `Loading ${item.shortName}...`;
+      if (iframe && iframe.src !== item.url) {
+        iframe.src = item.url;
+      }
+      if (extLink) extLink.href = item.url;
+      if (counterEl) counterEl.textContent = `${item.index} / ${String(LANDING_SHOWCASE.length).padStart(2, '0')}`;
+      if (nextLabelEl) nextLabelEl.textContent = `${nextItem.shortName} →`;
+      if (tabsEl) {
+        tabsEl.innerHTML = LANDING_SHOWCASE.map((x, i) => {
+          const active = i === activeLandingIdx;
+          return `
+            <button type="button" onclick="selectLanding(${i})" class="px-2.5 py-1 rounded-lg transition whitespace-nowrap ${active ? 'bg-[#ff3b1d] text-white font-semibold' : 'bg-white/5 text-zinc-400 hover:text-white border border-white/10'}">
+              ${x.index} ${x.shortName}
+            </button>
+          `;
+        }).join('');
+      }
+    }
+
+    // Lab Module 1: ClaimPilot Simulator
+    let simTimer = null;
+    function triggerPipelineStep() {
+      playTick(1200, 0.025);
+      const ids = ['step-0', 'step-1', 'step-2', 'step-3'];
+      if (simTimer) clearInterval(simTimer);
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = 'p-2 rounded hairline-box';
+      });
+      let i = 0;
+      simTimer = setInterval(() => {
+        if (i < ids.length) {
+          playTick(800 + i * 180, 0.015);
+          const el = document.getElementById(ids[i]);
+          if (el) el.className = 'p-2 rounded bg-[#ff3b1d] text-white font-semibold';
+          i++;
+        } else {
+          clearInterval(simTimer);
+          simTimer = null;
+          showToast('ClaimPilot LangGraph simulation finished in 640ms');
+        }
+      }, 140);
+    }
+    window.triggerPipelineStep = triggerPipelineStep;
+
+    // Lab Module 2: BookMyTransit Route Switcher
+    function selectTransitRoute(idx) {
+      playTick(950, 0.018);
+      const r = TRANSIT_ROUTES[idx] || TRANSIT_ROUTES[0];
+      [0, 1, 2, 3].forEach(i => {
+        const btn = document.getElementById('routeBtn' + i);
+        if (btn) {
+          btn.className = i === idx
+            ? 'p-2 rounded bg-[#ff3b1d] text-white text-left'
+            : 'p-2 rounded hairline-box text-left';
+        }
+      });
+      document.getElementById('transitVehicleLabel').textContent = r.vehicle;
+      document.getElementById('transitPriceReadout').textContent = r.price;
+      document.getElementById('transitSavingsNote').textContent = r.savings;
+    }
+    window.selectTransitRoute = selectTransitRoute;
+
+    // Lab Module 3: Distributed Latency Slider
+    function updateLatencyTelemetry(rps) {
+      playTick(600, 0.008);
+      const val = parseInt(rps, 10) || 1200;
+      document.getElementById('loadRpsLabel').textContent = val.toLocaleString() + ' RPS';
+      const optMs = Math.round(92 + (val / 5000) * 68);
+      document.getElementById('optLatencyVal').textContent = optMs + ' ms';
+    }
+    window.updateLatencyTelemetry = updateLatencyTelemetry;
+
+    // Modal & Command Palette
+    function openModal(id) {
+      playTick(1000, 0.02);
+      const item = WORK_ITEMS.find(x => x.id === id);
+      if (!item) return;
+      const modal = document.getElementById('detailModal');
+      document.getElementById('modalTag').textContent = item.badge + ' • ' + item.metric;
+      document.getElementById('modalHeading').textContent = item.title;
+      document.getElementById('modalSummary').textContent = item.oneLiner;
+      document.getElementById('modalBullets').innerHTML = item.bullets.map(b => `<li class="flex items-start gap-2"><span class="text-[#ff3b1d]">→</span><span>${b}</span></li>`).join('');
+      document.getElementById('modalActions').innerHTML = `
+        ${item.secondaryUrl ? `<a href="${item.secondaryUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl hairline-box text-xs">${item.secondaryLabel}</a>` : ''}
+        <a href="${item.primaryUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl bg-[#ff3b1d] text-white font-semibold text-xs">${item.primaryLabel}</a>
+      `;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+    window.openModal = openModal;
+
+    function closeModal() {
+      const modal = document.getElementById('detailModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+    window.closeModal = closeModal;
+
+    function openQuickSearch() {
+      playTick(1100, 0.02);
+      const modal = document.getElementById('searchModal');
+      const input = document.getElementById('quickSearchInput');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        renderSearchItems('');
+        if (input) {
+          input.value = '';
+          setTimeout(() => input.focus(), 40);
+        }
+      }
+    }
+    window.openQuickSearch = openQuickSearch;
+
+    function closeQuickSearch() {
+      const modal = document.getElementById('searchModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+    window.closeQuickSearch = closeQuickSearch;
+
+    function renderSearchItems(q) {
+      const container = document.getElementById('quickSearchResults');
+      if (!container) return;
+      const query = (q || '').toLowerCase().trim();
+      const filtered = !query
+        ? WORK_ITEMS
+        : WORK_ITEMS.filter(x => x.title.toLowerCase().includes(query) || x.arch.toLowerCase().includes(query) || x.oneLiner.toLowerCase().includes(query));
+
+      container.innerHTML = filtered.map(x => `
+        <a href="${x.primaryUrl}" target="_blank" rel="noopener noreferrer" class="block p-2.5 rounded-xl hairline-box hover:border-[#ff3b1d] transition">
+          <div class="flex items-center justify-between text-xs font-mono">
+            <span class="font-semibold">${x.index} // ${x.title}</span>
+            <span class="text-[10px] text-[#ff3b1d]">${x.primaryLabel}</span>
+          </div>
+          <p class="text-[11px] muted-text truncate mt-0.5">${x.arch}</p>
+        </a>
+      `).join('');
+    }
+    window.renderSearchItems = renderSearchItems;
+
+    let toastTimeout = null;
+    function showToast(text) {
+      const t = document.getElementById('toast');
+      if (!t) return;
+      t.textContent = text;
+      t.classList.remove('hidden');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => t.classList.add('hidden'), 2400);
+    }
+    window.showToast = showToast;
+
+    function copyText(val, label) {
+      playTick(1250, 0.025);
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(val).then(() => showToast(label));
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = val;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          showToast(label);
+        }
+      } catch (e) {
+        showToast(label);
+      }
+    }
+    window.copyText = copyText;
+
+    // Live IST Telemetry Clock
+    let clockInterval = null;
+    function startIstClock() {
+      const el = document.getElementById('liveClockDisplay');
+      if (!el) return;
+      const update = () => {
+        try {
+          const now = new Date();
+          const ist = now.toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata', hour12: false });
+          el.textContent = 'IST ' + ist;
+        } catch (e) { }
+      };
+      update();
+      if (clockInterval) clearInterval(clockInterval);
+      clockInterval = setInterval(update, 1000);
+    }
+
+    // Global Keyboard Shortcuts (T Theme, S Sound, Cmd+K Search, ESC / Arrows for Fullscreen Modal)
+    window.addEventListener('keydown', (e) => {
+      const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openQuickSearch();
+        return;
+      }
+      if (e.key === 'Escape') {
+        closeQuickSearch();
+        closeModal();
+        closeLandingFullscreen();
+        return;
+      }
+      const fsModalOpen = document.getElementById('landingFullscreenModal') && !document.getElementById('landingFullscreenModal').classList.contains('hidden');
+      if (fsModalOpen) {
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          stepLandingModal(1);
+          return;
+        }
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          stepLandingModal(-1);
+          return;
+        }
+      }
+      if (tag === 'input' || tag === 'textarea') return;
+
+      const k = e.key.toLowerCase();
+      if (k === 't') {
+        togglePaperMode();
+      } else if (k === 's') {
+        toggleSound();
+      }
+    });
+
+    // Dedicated Production Client Applications (5 Live)
+    const CLIENT_PRODUCTION_APPS = [
+      {
+        id: 'practaluma',
+        name: 'PractaLuma',
+        domain: 'practaluma.com',
+        url: 'https://www.practaluma.com/',
+        secondaryUrl: 'https://www.practaluma.com/features',
+        secondaryLabel: 'All 18 Features ↗',
+        category: 'AI Healthcare Platform',
+        stack: ['Next.js', 'React', 'TypeScript', 'AI Scribe', 'PostgreSQL'],
+        summary: 'Fullstack mental-health clinic platform with an AI session note-taker (Luma AI Scribe), 180+ psychology assessments, patient portal, scheduling, and billing.',
+        highlights: [
+          'AI Scribe listens to therapy sessions and drafts structured clinical notes automatically.',
+          'Includes 180+ standardized psychology assessments, patient portal, and billing.'
+        ],
+        accent: '#10b981'
+      },
+      {
+        id: 'bexcard',
+        name: 'Bex Card UK',
+        domain: 'bexcard.co.uk',
+        url: 'https://www.bexcard.co.uk/',
+        secondaryUrl: 'https://www.bexcard.co.uk/why-bex',
+        secondaryLabel: 'Why Bex & JISA ↗',
+        category: 'UK Family Fintech & AI',
+        stack: ['Node.js', 'TypeScript', 'OpenAI API', 'AWS Lambda/SQS', 'Terraform'],
+        summary: 'UK family banking platform offering teen prepaid Mastercard debit cards, automated pocket money, BlackRock Junior ISA savings, and the OpenAI-powered BexBuddy money tutor.',
+        highlights: [
+          'Built BexBuddy, an OpenAI feature that teaches teens about saving and investing in simple terms.',
+          'Built AWS Lambda & SQS pipelines and cut monthly cloud costs by 15% with Terraform.'
+        ],
+        accent: '#6366f1'
+      },
+      {
+        id: 'bookmytransit',
+        name: 'BookMyTransit',
+        domain: 'bookmytransit.com',
+        url: 'https://bookmytransit.com/',
+        secondaryUrl: 'https://bookmytransit.com/',
+        secondaryLabel: 'Book Transfer ↗',
+        category: 'Cross-Border Travel Tech',
+        stack: ['Next.js 16', 'React 19', 'Supabase', 'Razorpay INR', 'Vercel'],
+        summary: 'Japan airport and city chauffeur booking platform built for Indian travelers—featuring fixed prices in INR (₹) via Razorpay UPI/cards with zero bank forex fees.',
+        highlights: [
+          'Transparent fixed rates across Narita, Haneda, Kansai, Kyoto, and Hiroshima in INR and JPY.',
+          'Built with Next.js 16 SSR, pre-rendered SEO route & guide pages, JSON-LD, and English/Hindi support.'
+        ],
+        accent: '#f59e0b'
+      },
+      {
+        id: 'servgenie',
+        name: 'ServGenie',
+        domain: 'servgenie.co',
+        url: 'https://servgenie.co/',
+        secondaryUrl: 'https://play.google.com/store/apps/details?id=com.ekl.servgenie&hl=en_IN',
+        secondaryLabel: 'Google Play App ↗',
+        category: 'AI Service Marketplace',
+        stack: ['React', 'Node.js', 'Voice/Text AI', 'PostgreSQL', 'REST APIs'],
+        summary: 'On-demand marketplace where "Wishers" post multi-task jobs and verified "Genies" bid live, paired with a 24×7 multilingual AI voice and text troubleshooting app.',
+        highlights: [
+          'Customers post hashtag-tagged service tasks and negotiate live bids with verified pros.',
+          '24×7 multilingual AI voice and text diagnostic assistant live on Google Play.'
+        ],
+        accent: '#14b8a6'
+      },
+      {
+        id: 'nibindia',
+        name: 'NIB India 2026',
+        domain: 'nibindia.org',
+        url: 'https://www.nibindia.org/',
+        secondaryUrl: 'https://www.nibindia.org/',
+        secondaryLabel: 'Competition Portal ↗',
+        category: 'National AI & Robotics Portal',
+        stack: ['React', 'TypeScript', 'Tailwind CSS', 'Vite'],
+        summary: 'Official website for India’s National Innovators Battle 2026—managing online idea submissions, team registrations, and Grand Finale tracks for student AI and robotics builders.',
+        highlights: [
+          'Two-stage national competition flow: Stage 01 Online Idea Evaluation + Stage 02 Grand Finale.',
+          'Tracks include AI Innovation Challenge, Future Innovators Exhibition, Robo Rugby & Line Follower.'
+        ],
+        accent: '#f97316'
+      }
+    ];
+
+    let activeClientAppIdx = 0;
+
+    function selectClientPreview(idx) {
+      if (activeClientAppIdx === idx) return;
+      activeClientAppIdx = idx;
+      playTick(1020, 0.018);
+      renderClientProductionSection();
+    }
+    window.selectClientPreview = selectClientPreview;
+
+    function stepClientPreview(delta) {
+      activeClientAppIdx = (activeClientAppIdx + delta + CLIENT_PRODUCTION_APPS.length) % CLIENT_PRODUCTION_APPS.length;
+      playTick(1060, 0.018);
+      renderClientProductionSection();
+    }
+    window.stepClientPreview = stepClientPreview;
+
+    function renderClientProductionSection() {
+      const containerEl = document.getElementById('clientCardsGrid');
+      if (!containerEl) return;
+
+      const app = CLIENT_PRODUCTION_APPS[activeClientAppIdx] || CLIENT_PRODUCTION_APPS[0];
+      const appNum = String(activeClientAppIdx + 1).padStart(2, '0');
+      const totalNum = String(CLIENT_PRODUCTION_APPS.length).padStart(2, '0');
+
+      containerEl.innerHTML = `
+        <!-- 5-App Interactive Tab Selector Strip -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5" role="tablist" aria-label="Client production applications">
+          ${CLIENT_PRODUCTION_APPS.map((item, i) => {
+        const isActive = i === activeClientAppIdx;
+        const num = String(i + 1).padStart(2, '0');
+        return `
+              <button
+                type="button"
+                role="tab"
+                aria-selected="${isActive}"
+                onclick="selectClientPreview(${i})"
+                class="text-left p-3.5 rounded-xl transition flex flex-col justify-between gap-1.5 ${isActive ? 'border border-[#ff3b1d] bg-[#ff3b1d]/10 shadow-lg' : 'hairline-box hover:border-[#ff3b1d]/60 opacity-80 hover:opacity-100'}"
+              >
+                <div class="flex items-center justify-between w-full font-mono text-[10px]">
+                  <span class="${isActive ? 'text-[#ff3b1d] font-semibold' : 'subtle-text'}">${num} // LIVE</span>
+                  <span class="w-2 h-2 rounded-full" style="background-color: ${item.accent}; ${isActive ? `box-shadow: 0 0 10px ${item.accent};` : ''}"></span>
+                </div>
+                <div class="font-display font-bold text-sm sm:text-base truncate">${item.name}</div>
+                <div class="font-mono text-[10px] muted-text truncate">${item.category}</div>
+              </button>
+            `;
+      }).join('')}
+        </div>
+
+        <!-- Active Client App Split-View Showcase Card -->
+        <article class="hairline-box rounded-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 shadow-2xl client-panel-in">
+          <!-- Left 5 Cols: Architecture, Impact & Links -->
+          <div class="lg:col-span-5 p-6 sm:p-7 flex flex-col justify-between space-y-5">
+            <div class="space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-2 font-mono text-[11px]">
+                <span class="px-2.5 py-1 rounded bg-white/5 border border-white/10 font-semibold" style="color: ${app.accent};">
+                  ${appNum} / ${totalNum} // ${app.category.toUpperCase()}
+                </span>
+                <a href="${app.url}" target="_blank" rel="noopener noreferrer" class="muted-text hover:underline">${app.domain} ↗</a>
+              </div>
+
+              <div>
+                <h3 class="font-display font-bold text-2xl sm:text-3xl">
+                  <a href="${app.url}" target="_blank" rel="noopener noreferrer" class="hover:text-[#ff3b1d] transition">${app.name}</a>
+                </h3>
+                <p class="text-xs sm:text-sm muted-text mt-2 leading-relaxed">${app.summary}</p>
+              </div>
+
+              <div class="space-y-2 pt-3 hairline-t text-xs sm:text-sm muted-text">
+                ${app.highlights.map(h => `<div class="flex items-start gap-2.5"><span class="text-[#ff3b1d] font-mono mt-0.5">→</span><span>${h}</span></div>`).join('')}
+              </div>
+            </div>
+
+            <div class="pt-4 hairline-t space-y-4 font-mono">
+              <div class="flex flex-wrap gap-1.5">
+                ${app.stack.map(st => `<span class="px-2.5 py-1 rounded-md text-[11px] bg-white/5 text-zinc-300 border border-white/10">${st}</span>`).join('')}
+              </div>
+
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-2">
+                  <a href="${app.url}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl bg-[#ff3b1d] text-white font-semibold text-xs hover:opacity-90 transition">
+                    Visit ${app.domain} ↗
+                  </a>
+                  ${app.secondaryUrl !== app.url ? `<a href="${app.secondaryUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2.5 rounded-xl hairline-box text-xs muted-text hover:opacity-100 transition">${app.secondaryLabel}</a>` : ''}
+                </div>
+
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="stepClientPreview(-1)" aria-label="Previous client app" class="w-9 h-9 rounded-lg hairline-box hover:border-[#ff3b1d] hover:text-[#ff3b1d] active:scale-90 transition flex items-center justify-center text-sm">←</button>
+                  <button type="button" onclick="stepClientPreview(1)" aria-label="Next client app" class="w-9 h-9 rounded-lg hairline-box hover:border-[#ff3b1d] hover:text-[#ff3b1d] active:scale-90 transition flex items-center justify-center text-sm">→</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right 7 Cols: Live Embedded Website Viewport -->
+          <div class="lg:col-span-7 border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col bg-[#050508]">
+            <div class="px-3.5 py-2.5 bg-black/90 border-b border-white/10 flex items-center justify-between gap-2 font-mono text-[10px]">
+              <div class="flex items-center gap-1.5 min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80 flex-shrink-0"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-400/80 flex-shrink-0"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400/80 flex-shrink-0"></span>
+                <span class="ml-2 text-zinc-400 truncate">${app.url}</span>
+              </div>
+              <a href="${app.url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded bg-white/10 hover:bg-[#ff3b1d] text-white transition font-semibold flex-shrink-0">
+                Open Live ↗
+              </a>
+            </div>
+            <div class="relative flex-1 min-h-[380px] sm:min-h-[440px] w-full bg-[#050508] overflow-hidden">
+              <div id="clientIframeLoader" class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#050508] pointer-events-none transition-opacity duration-300">
+                <div class="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/5 border border-white/10 font-mono text-xs text-zinc-300">
+                  <span class="w-2 h-2 rounded-full bg-[#ff3b1d] animate-ping"></span>
+                  <span>Loading ${app.domain}...</span>
+                </div>
+                <div class="w-40 h-1 rounded-full bg-white/10 overflow-hidden">
+                  <div class="w-1/2 h-full rounded-full bg-[#ff3b1d] showcase-loader-bar"></div>
+                </div>
+              </div>
+              <iframe
+                id="clientLiveIframe"
+                src="${app.url}"
+                title="${app.name} — Live Website"
+                onload="onClientIframeLoad()"
+                class="w-full h-full min-h-[380px] sm:min-h-[440px] border-0 block bg-white"
+                allow="autoplay; fullscreen"
+              ></iframe>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function onClientIframeLoad() {
+      const loader = document.getElementById('clientIframeLoader');
+      if (loader) loader.classList.add('opacity-0');
+    }
+    window.onClientIframeLoad = onClientIframeLoad;
+
+    function renderAiBuilds() {
+      const grid = document.getElementById('aiBuildsGrid');
+      if (!grid) return;
+      const aiItems = WORK_ITEMS.filter(item => item.kind === 'ai');
+
+      grid.innerHTML = aiItems.map((item, idx) => {
+        const num = String(idx + 1).padStart(2, '0');
+        const stackTags = item.arch.split('•').map(s => s.trim()).filter(Boolean);
+        return `
+          <article class="hairline-box rounded-2xl p-6 flex flex-col justify-between space-y-5 transition hover:border-[#ff3b1d] shadow-xl">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between gap-2 font-mono text-[10px]">
+                <span class="px-2.5 py-1 rounded bg-[#ff3b1d]/15 text-[#ff3b1d] font-semibold">${num} // ${item.badge}</span>
+                <button type="button" onclick="openModal('${item.id}')" class="underline muted-text hover:opacity-100">Specs +</button>
+              </div>
+
+              <div>
+                <h3 class="font-display font-bold text-xl sm:text-2xl">
+                  <a href="${item.primaryUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-[#ff3b1d] transition">${item.title}</a>
+                </h3>
+                <p class="text-xs sm:text-sm muted-text mt-2 leading-relaxed">${item.oneLiner}</p>
+              </div>
+
+              <div class="px-3 py-2 rounded-lg bg-white/5 border border-white/10 font-mono text-[10px] text-emerald-400">
+                ${item.metric}
+              </div>
+
+              <div class="space-y-1.5 pt-2 hairline-t text-xs muted-text">
+                ${item.bullets.slice(0, 2).map(b => `<div class="flex items-start gap-2"><span class="text-[#ff3b1d] font-mono">→</span><span>${b}</span></div>`).join('')}
+              </div>
+            </div>
+
+            <div class="pt-4 hairline-t space-y-3 font-mono">
+              <div class="flex flex-wrap gap-1.5">
+                ${stackTags.map(st => `<span class="px-2 py-0.5 rounded text-[10px] bg-white/5 text-zinc-300 border border-white/10">${st}</span>`).join('')}
+              </div>
+              <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                <a href="${item.primaryUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-[#ff3b1d] text-white font-semibold hover:opacity-90 transition">
+                  ${item.primaryLabel}
+                </a>
+                ${item.secondaryUrl ? `<a href="${item.secondaryUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl hairline-box muted-text hover:opacity-100 transition">${item.secondaryLabel}</a>` : ''}
+                ${item.extraUrl ? `<a href="${item.extraUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl hairline-box muted-text hover:opacity-100 transition">${item.extraLabel}</a>` : ''}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderClientProductionSection();
+      renderLandingShowcase();
+      renderAiBuilds();
+      startIstClock();
+    });
+  </script>
+</body>
+
+</html>
